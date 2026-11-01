@@ -2,7 +2,6 @@ package me.capcom.smsgateway.modules.incoming
 
 import android.content.Context
 import android.net.Uri
-import android.util.Base64
 import me.capcom.smsgateway.helpers.SubscriptionsHelper
 import me.capcom.smsgateway.modules.incoming.db.IncomingMessage
 import me.capcom.smsgateway.modules.incoming.db.IncomingMessageType
@@ -68,64 +67,20 @@ class IncomingMessagesService(
     private fun persistMmsAttachments(messageId: String, message: InboxMessage.MMS) {
         message.attachments.forEach { att ->
             when {
-                att.data != null -> persistInlineAttachment(messageId, message.messageId, att, att.data)
-                att.omitted -> persistOmittedAttachment(messageId, message.messageId, att)
+                att.omitted || att.data != null ->
+                    persistAttachment(messageId, message.messageId, att)
+
                 else -> Unit
             }
         }
     }
 
-    private fun persistInlineAttachment(
-        messageId: String,
-        mmsId: String,
-        attachment: InboxMessage.MMS.Attachment,
-        data: String,
-    ) {
-        val decoded = runCatching {
-            Base64.decode(data, Base64.DEFAULT)
-        }.onFailure { e ->
-            logsService.insert(
-                LogEntry.Priority.WARN,
-                MODULE_NAME,
-                "Failed to decode MMS attachment data",
-                mapOf(
-                    "messageId" to messageId,
-                    "mmsId" to mmsId,
-                    "partId" to attachment.partId,
-                    "name" to (attachment.name ?: ""),
-                    "error" to (e.message ?: e.toString()),
-                )
-            )
-        }.getOrNull() ?: return
-
-        try {
-            attachmentStorage.store(
-                messageId,
-                attachment.partId,
-                attachment.name,
-                attachment.contentType,
-                decoded,
-            )
-        } catch (e: Exception) {
-            logsService.insert(
-                LogEntry.Priority.WARN,
-                MODULE_NAME,
-                "Failed to persist MMS attachment",
-                mapOf(
-                    "messageId" to messageId,
-                    "mmsId" to mmsId,
-                    "partId" to attachment.partId,
-                    "error" to (e.message ?: e.toString()),
-                )
-            )
-        }
-    }
-
     /**
-     * Stores an attachment that was too large to be inlined by streaming it
-     * from the MMS provider, so its bytes stay available on the device.
+     * Stores an attachment by streaming it from the MMS provider, so its bytes
+     * are never held in memory as a whole and stay available on the device
+     * beyond the lifetime of the provider entry.
      */
-    private fun persistOmittedAttachment(
+    private fun persistAttachment(
         messageId: String,
         mmsId: String,
         attachment: InboxMessage.MMS.Attachment,

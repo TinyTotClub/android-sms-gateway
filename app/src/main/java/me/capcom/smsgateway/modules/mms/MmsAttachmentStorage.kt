@@ -26,20 +26,6 @@ class MmsAttachmentStorage(
     private val root: File
         get() = File(context.filesDir, "mms-in").apply { mkdirs() }
 
-    fun store(
-        messageId: String,
-        partId: Long,
-        name: String?,
-        contentType: String,
-        bytes: ByteArray,
-    ): StoredAttachment {
-        val dir = messageDir(messageId).apply { mkdirs() }
-        val file = File(dir, "$partId")
-        file.writeBytes(bytes)
-        val meta = writeMetadata(file, name, contentType)
-        return StoredAttachment(partId, meta.displayName, meta.contentType, file)
-    }
-
     /**
      * Stores an attachment by streaming its content, so the bytes are never
      * held in memory as a whole. The source stream is closed by this method.
