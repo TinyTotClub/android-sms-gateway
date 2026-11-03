@@ -1,6 +1,11 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <Preference
+        android:icon="@drawable/ic_payments"
+        app:fragment="me.capcom.smsgateway.ui.tinytot.TinyTotSettingsFragment"
+        app:summary="@string/tinytot_settings_summary"
+        app:title="@string/tinytot_settings_title" />
+    <Preference
         app:fragment="me.capcom.smsgateway.ui.settings.DeviceSettingsFragment"
         app:icon="@drawable/ic_encryption"
         app:summary="@string/device_keys_management"

@@ -34,6 +34,7 @@ import me.capcom.smsgateway.extensions.configure
 import me.capcom.smsgateway.modules.logs.LogsService
 import me.capcom.smsgateway.modules.logs.db.LogEntry
 import me.capcom.smsgateway.modules.notifications.NotificationsService
+import me.capcom.smsgateway.modules.tinytot.UpiQueueDelivery
 import me.capcom.smsgateway.modules.webhooks.NAME
 import me.capcom.smsgateway.modules.webhooks.WebhookPayloadStorage
 import me.capcom.smsgateway.modules.webhooks.WebhooksSettings
@@ -61,6 +62,7 @@ class WebhookQueueProcessorWorker(
     private val webhookRepository: WebhookQueueRepository by inject()
     private val payloadStorage: WebhookPayloadStorage by inject()
     private val settings: WebhooksSettings by inject()
+    private val upiDelivery: UpiQueueDelivery by inject()
 
     companion object {
         private const val BATCH_SIZE = 20
@@ -262,10 +264,12 @@ class WebhookQueueProcessorWorker(
                     )
                 )
 
-                var processedCount = 0
+                var processedCount = processUpiEntries(webhooks.filter { UpiQueueDelivery.owns(it.url) })
                 var failedCount = 0
 
                 for (webhook in webhooks) {
+                    if (UpiQueueDelivery.owns(webhook.url)) continue
+
                     withContext(NonCancellable) {
                         try {
                             // Start processing this webhook
@@ -322,6 +326,44 @@ class WebhookQueueProcessorWorker(
                 throw e
             }
         }
+
+    /**
+     * TinyTot: PNB SMS queued for the UPI verifier go out as one signed `ingest_sms`
+     * batch instead of one webhook POST each; retries use the same queue backoff.
+     */
+    private suspend fun processUpiEntries(entries: List<WebhookQueueEntity>): Int {
+        if (entries.isEmpty()) return 0
+
+        return withContext(NonCancellable) {
+            entries.forEach { webhookRepository.startProcessing(it.id) }
+
+            val outcomes = try {
+                upiDelivery.deliver(entries)
+            } catch (e: Exception) {
+                val error = e.message ?: e.toString()
+                entries.associate { it.id to UpiQueueDelivery.Outcome.Retry(error) }
+            }
+
+            var delivered = 0
+            entries.forEach { entry ->
+                when (val outcome = outcomes[entry.id]) {
+                    UpiQueueDelivery.Outcome.Delivered -> {
+                        webhookRepository.completeWebhook(entry.id)
+                        delivered++
+                    }
+
+                    is UpiQueueDelivery.Outcome.Drop ->
+                        webhookRepository.permanentlyFailWebhook(entry.id, outcome.error)
+
+                    is UpiQueueDelivery.Outcome.Retry ->
+                        handleWebhookFailure(entry.id, outcome.error)
+
+                    null -> handleWebhookFailure(entry.id, "No delivery outcome")
+                }
+            }
+            delivered
+        }
+    }
 
     /**
      * Send a webhook using the same HTTP client configuration as the original worker.

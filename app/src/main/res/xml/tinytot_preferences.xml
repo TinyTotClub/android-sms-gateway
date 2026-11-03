@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory app:title="@string/tinytot_settings_title">
+        <EditTextPreference
+            android:icon="@drawable/ic_server"
+            app:dialogMessage="@string/tinytot_verifier_url_hint"
+            app:key="tinytot.verifier_url"
+            app:title="@string/tinytot_verifier_url"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            android:icon="@drawable/ic_key"
+            app:key="tinytot.api_key"
+            app:persistent="false"
+            app:title="@string/tinytot_api_key" />
+        <EditTextPreference
+            android:icon="@drawable/ic_device_id"
+            app:key="tinytot.device_id"
+            app:title="@string/tinytot_device_id"
+            app:useSimpleSummaryProvider="true" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_sms"
+            app:key="tinytot.forward_enabled"
+            app:summary="@string/tinytot_forward_pnb_summary"
+            app:title="@string/tinytot_forward_pnb" />
+    </PreferenceCategory>
+
+    <PreferenceCategory>
+        <Preference
+            android:icon="@drawable/ic_ping"
+            app:key="tinytot.test_connection"
+            app:persistent="false"
+            app:summary="@string/tinytot_test_connection_summary"
+            app:title="@string/tinytot_test_connection" />
+        <Preference
+            android:icon="@drawable/ic_retry"
+            app:key="tinytot.resend_recent"
+            app:persistent="false"
+            app:summary="@string/tinytot_resend_recent_summary"
+            app:title="@string/tinytot_resend_recent" />
+        <Preference
+            android:icon="@drawable/ic_info"
+            app:key="tinytot.status"
+            app:persistent="false"
+            app:selectable="false"
+            app:title="@string/tinytot_status" />
+    </PreferenceCategory>
+</androidx.preference.PreferenceScreen>

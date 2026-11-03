@@ -21,6 +21,7 @@ import me.capcom.smsgateway.modules.orchestrator.orchestratorModule
 import me.capcom.smsgateway.modules.ping.pingModule
 import me.capcom.smsgateway.modules.receiver.receiverModule
 import me.capcom.smsgateway.modules.settings.settingsModule
+import me.capcom.smsgateway.modules.tinytot.tinytotModule
 import me.capcom.smsgateway.modules.webhooks.webhooksModule
 import me.capcom.smsgateway.receivers.EventsReceiver
 import org.koin.android.ext.android.get
@@ -59,6 +60,7 @@ class App: Application() {
                 connectionModule,
                 orchestratorModule,
                 deviceModule,
+                tinytotModule,
             )
         }
 

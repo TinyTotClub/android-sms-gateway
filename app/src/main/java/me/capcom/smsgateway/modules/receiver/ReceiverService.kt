@@ -14,6 +14,7 @@ import me.capcom.smsgateway.modules.incoming.db.IncomingMessageType
 import me.capcom.smsgateway.modules.logs.LogsService
 import me.capcom.smsgateway.modules.logs.db.LogEntry
 import me.capcom.smsgateway.modules.receiver.data.InboxMessage
+import me.capcom.smsgateway.modules.tinytot.UpiSmsForwarder
 import me.capcom.smsgateway.modules.webhooks.WebHooksService
 import me.capcom.smsgateway.modules.webhooks.domain.WebHookEvent
 import me.capcom.smsgateway.modules.webhooks.payload.MmsBatchDownloadedPayload
@@ -33,6 +34,7 @@ class ReceiverService : KoinComponent {
     private val incomingMessagesService: IncomingMessagesService by inject()
     private val receiverSettings: ReceiverSettings by inject()
     private val gatewayService: GatewayService by inject()
+    private val upiSmsForwarder: UpiSmsForwarder by inject()
 
     private val eventsReceiver by lazy { EventsReceiver() }
     private val mmsContentObserver by lazy { MmsContentObserver() }
@@ -174,6 +176,11 @@ class ReceiverService : KoinComponent {
         }
 
         val incoming = incomingMessagesService.save(message)
+
+        // TinyTot: queue PNB bank SMS for the UPI verifier; other senders are dropped there.
+        if (message is InboxMessage.Text) {
+            upiSmsForwarder.onIncomingSms(context, message.address, message.text, message.date.time)
+        }
 
         return when (message) {
             is InboxMessage.Text -> WebHookEvent.SmsReceived to SmsEventPayload.SmsReceived(

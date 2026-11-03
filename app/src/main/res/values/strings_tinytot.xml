@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="tinytot_tab_payments">Payments</string>
+
+    <!-- Payments screen -->
+    <string name="tinytot_open_payments">Open payments</string>
+    <string name="tinytot_unmatched_credits">Bank credits to review</string>
+    <string name="tinytot_no_open_payments">No open payments</string>
+    <string name="tinytot_no_unmatched_credits">No bank credits waiting for review</string>
+    <string name="tinytot_not_configured">Set the verifier URL and API key to start.</string>
+    <string name="tinytot_open_settings">Open settings</string>
+    <string name="tinytot_permissions_missing">SMS or notification permission is missing. Bank SMS cannot be forwarded.</string>
+    <string name="tinytot_grant_permissions">Grant</string>
+    <string name="tinytot_updated_at">Updated %1$s</string>
+    <string name="tinytot_loading">Loading…</string>
+    <string name="tinytot_status_pending">Pending</string>
+    <string name="tinytot_status_claimed">Payer says paid</string>
+    <string name="tinytot_status_mismatch">Amount mismatch</string>
+    <string name="tinytot_status_failed">Failed</string>
+    <string name="tinytot_status_other">Open</string>
+    <string name="tinytot_status_ambiguous">Several matches</string>
+    <string name="tinytot_status_unmatched">Unmatched</string>
+    <string name="tinytot_ref">Ref %1$s</string>
+    <string name="tinytot_claim">Payer: %1$s · UTR %2$s</string>
+    <string name="tinytot_claim_no_utr">Payer: %1$s</string>
+    <string name="tinytot_claim_utr_only">Payer UTR %1$s</string>
+    <string name="tinytot_student">Student %1$s</string>
+    <string name="tinytot_payment">Payment</string>
+    <string name="tinytot_unknown_payer">Unknown payer</string>
+    <string name="tinytot_utr">UTR %1$s</string>
+    <string name="tinytot_verify">Verify</string>
+    <string name="tinytot_reject">Reject</string>
+    <string name="tinytot_ignore">Ignore</string>
+    <string name="tinytot_cancel">Cancel</string>
+
+    <!-- Dialogs -->
+    <string name="tinytot_verify_title">Verify %1$s</string>
+    <string name="tinytot_verify_pick">Pick the bank credit for this payment</string>
+    <string name="tinytot_verify_no_credits">No unmatched bank credits. Enter the amount received.</string>
+    <string name="tinytot_verify_manual">Enter amount manually</string>
+    <string name="tinytot_suggested">Suggested</string>
+    <string name="tinytot_amount_received">Amount received (₹)</string>
+    <string name="tinytot_utr_optional">UTR (12 digits, optional)</string>
+    <string name="tinytot_amount_invalid">Enter a valid amount</string>
+    <string name="tinytot_utr_invalid">UTR must be 12 digits</string>
+    <string name="tinytot_next">Next</string>
+    <string name="tinytot_confirm_verify_title">Mark as paid?</string>
+    <string name="tinytot_confirm_verify_credit">Link the %1$s credit from %2$s to payment %3$s and mark the bill paid?</string>
+    <string name="tinytot_confirm_verify_manual">Mark payment %1$s as paid with %2$s received?</string>
+    <string name="tinytot_mark_paid">Mark paid</string>
+    <string name="tinytot_reject_title">Reject payment %1$s?</string>
+    <string name="tinytot_ignore_title">Ignore %1$s credit?</string>
+    <string name="tinytot_reason">Reason</string>
+    <string name="tinytot_reason_required">Enter a reason</string>
+
+    <!-- Results -->
+    <string name="tinytot_verified_amount">%1$s marked paid</string>
+    <string name="tinytot_verified">Payment marked paid</string>
+    <string name="tinytot_rejected">Payment rejected</string>
+    <string name="tinytot_ignored">Credit ignored</string>
+
+    <!-- Errors -->
+    <string name="tinytot_error_not_configured">Verifier URL or API key is not set</string>
+    <string name="tinytot_error_network">No connection to the server: %1$s</string>
+    <string name="tinytot_error_stale">Phone clock is wrong. Turn on automatic date &amp; time.</string>
+    <string name="tinytot_error_bad_signature">API key does not match the server</string>
+    <string name="tinytot_error_bad_device">Device id is not valid</string>
+    <string name="tinytot_error_auth">Server refused the request: %1$s</string>
+    <string name="tinytot_error_response_signature">Server reply could not be verified. Check the URL and API key.</string>
+    <string name="tinytot_error_generic">%1$s</string>
+
+    <!-- Settings -->
+    <string name="tinytot_settings_title">TinyTot UPI</string>
+    <string name="tinytot_settings_summary">Verifier URL, API key, device id</string>
+    <string name="tinytot_verifier_url">Verifier URL</string>
+    <string name="tinytot_verifier_url_hint">https://&lt;project&gt;.supabase.co/functions/v1/upi-verifier</string>
+    <string name="tinytot_api_key">API key</string>
+    <string name="tinytot_api_key_set">Set (stored encrypted)</string>
+    <string name="tinytot_api_key_not_set">Not set</string>
+    <string name="tinytot_device_id">Device id</string>
+    <string name="tinytot_device_id_invalid">Use 1–64 letters, digits, dot, dash or underscore</string>
+    <string name="tinytot_forward_pnb">Forward PNB SMS</string>
+    <string name="tinytot_forward_pnb_summary">Send Punjab National Bank SMS to the verifier. Other SMS are never sent.</string>
+    <string name="tinytot_test_connection">Test connection</string>
+    <string name="tinytot_test_connection_summary">Send a signed ping to the verifier</string>
+    <string name="tinytot_testing">Testing…</string>
+    <string name="tinytot_connected">Connected to %1$s</string>
+    <string name="tinytot_clock_skew">Phone clock differs from the server by %1$d s</string>
+    <string name="tinytot_resend_recent">Resend recent PNB SMS</string>
+    <string name="tinytot_resend_recent_summary">Forward PNB SMS from the last 24 hours again. The server skips duplicates.</string>
+    <string name="tinytot_resend_done">Queued %1$d PNB SMS</string>
+    <string name="tinytot_resend_no_permission">Allow SMS access first</string>
+    <string name="tinytot_status">Status</string>
+    <string name="tinytot_status_never">No successful sync yet</string>
+    <string name="tinytot_status_last_sync">Last sync %1$s</string>
+    <string name="tinytot_status_last_error">Last error %1$s: %2$s</string>
+
+    <!-- Notifications -->
+    <string name="tinytot_notif_channel">UPI payments</string>
+    <string name="tinytot_notif_payment_verified">%1$s payment verified</string>
+    <string name="tinytot_notif_payment_verified_no_amount">Payment verified</string>
+    <string name="tinytot_notif_credit_review">Credit needs review</string>
+    <string name="tinytot_notif_credit_review_amount">%1$s credit needs review</string>
+</resources>
