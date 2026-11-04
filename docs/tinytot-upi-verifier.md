@@ -50,7 +50,12 @@ JAVA_HOME=<JDK 17> ./gradlew test
    example after first setup or a long outage. The server drops duplicates by message hash.
 
 The **Status** line in the TinyTot UPI settings shows the last successful sync and the last
-error.
+error. The **Home** tab shows a *PNB SMS forwarding* card (Active / Off / Not set up).
+
+Forwarding does not need **Start service**: that button and *Start on boot* only run the
+optional upstream local/cloud servers and are hidden while both are off. Whenever *Forward PNB
+SMS* is on and the URL and key are set, the app enables its SMS receiver at every app start
+(including boot) and on every settings change, and stopping the upstream service leaves it on.
 
 ## How forwarding works
 

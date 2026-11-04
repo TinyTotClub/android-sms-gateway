@@ -14,6 +14,8 @@ import me.capcom.smsgateway.modules.incoming.db.IncomingMessageType
 import me.capcom.smsgateway.modules.logs.LogsService
 import me.capcom.smsgateway.modules.logs.db.LogEntry
 import me.capcom.smsgateway.modules.receiver.data.InboxMessage
+import me.capcom.smsgateway.modules.tinytot.TinyTotSettings
+import me.capcom.smsgateway.modules.tinytot.UpiForwarding
 import me.capcom.smsgateway.modules.tinytot.UpiSmsForwarder
 import me.capcom.smsgateway.modules.webhooks.WebHooksService
 import me.capcom.smsgateway.modules.webhooks.domain.WebHookEvent
@@ -35,6 +37,7 @@ class ReceiverService : KoinComponent {
     private val receiverSettings: ReceiverSettings by inject()
     private val gatewayService: GatewayService by inject()
     private val upiSmsForwarder: UpiSmsForwarder by inject()
+    private val tinyTotSettings: TinyTotSettings by inject()
 
     private val eventsReceiver by lazy { EventsReceiver() }
     private val mmsContentObserver by lazy { MmsContentObserver() }
@@ -56,6 +59,8 @@ class ReceiverService : KoinComponent {
         eventsReceiver.stop()
         MmsReceiver.stop(context)
         MessagesReceiver.stop(context)
+        // Stopping the gateway must not stop PNB forwarding.
+        UpiForwarding.ensure(context, tinyTotSettings)
     }
 
     suspend fun export(

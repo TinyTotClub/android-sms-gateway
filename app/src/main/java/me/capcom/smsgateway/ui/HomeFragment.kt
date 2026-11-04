@@ -41,6 +41,8 @@ import me.capcom.smsgateway.modules.localserver.LocalServerService
 import me.capcom.smsgateway.modules.localserver.LocalServerSettings
 import me.capcom.smsgateway.modules.localserver.events.IPReceivedEvent
 import me.capcom.smsgateway.modules.orchestrator.OrchestratorService
+import me.capcom.smsgateway.modules.tinytot.TinyTotSettings
+import me.capcom.smsgateway.modules.tinytot.UpiForwarding
 import me.capcom.smsgateway.ui.dialogs.FirstStartDialogFragment
 import org.koin.android.ext.android.inject
 
@@ -55,6 +57,7 @@ class HomeFragment : Fragment() {
     private val localServerSettings: LocalServerSettings by inject()
     private val gatewaySettings: GatewaySettings by inject()
     private val connectionService: ConnectionService by inject()
+    private val tinyTotSettings: TinyTotSettings by inject()
 
     private val events: EventBus by inject()
 
@@ -178,6 +181,7 @@ class HomeFragment : Fragment() {
             gatewaySettings.enabled = isChecked
             binding.layoutRemoteServer.isVisible = isChecked
             binding.textConnectionStatus.isVisible = isChecked
+            updateStartControls()
         }
         binding.switchUseLocalServer.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked != localServerSettings.enabled) {
@@ -186,6 +190,7 @@ class HomeFragment : Fragment() {
 
             localServerSettings.enabled = isChecked
             binding.layoutLocalServer.isVisible = isChecked
+            updateStartControls()
         }
 
         binding.buttonStart.setOnClickListener {
@@ -317,6 +322,7 @@ class HomeFragment : Fragment() {
                     )
                 )
             }
+            updateStartControls()
         }
 
         connectionService.status.observe(viewLifecycleOwner) {
@@ -368,6 +374,8 @@ class HomeFragment : Fragment() {
 
         binding.switchUseRemoteServer.isChecked = gatewaySettings.enabled
         binding.switchUseLocalServer.isChecked = localServerSettings.enabled
+        updateTinyTotCard()
+        updateStartControls()
     }
 
     private fun actionStart(start: Boolean) {
@@ -478,6 +486,52 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+    }
+
+    /** START / Start on boot only drive the optional local and cloud servers. */
+    private fun updateStartControls() {
+        val binding = _binding ?: return
+        val relevant = gatewaySettings.enabled || localServerSettings.enabled ||
+                stateLiveData.value == true
+        binding.buttonStart.isVisible = relevant
+        binding.switchAutostart.isVisible = relevant
+    }
+
+    private fun updateTinyTotCard() {
+        val binding = _binding ?: return
+        val context = requireContext()
+        UpiForwarding.ensure(context, tinyTotSettings)
+
+        val smsGranted = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.RECEIVE_SMS
+        ) == PackageManager.PERMISSION_GRANTED
+        val (state, color, detail) = when {
+            !tinyTotSettings.isConfigured -> Triple(
+                R.string.tinytot_home_not_set_up, R.color.amber_800,
+                R.string.tinytot_home_not_set_up_detail
+            )
+            !tinyTotSettings.forwardEnabled -> Triple(
+                R.string.tinytot_home_off, R.color.grey_700, R.string.tinytot_home_off_detail
+            )
+            !smsGranted -> Triple(
+                R.string.tinytot_home_off, R.color.red_800,
+                R.string.tinytot_home_no_permission_detail
+            )
+            else -> Triple(
+                R.string.tinytot_home_active, R.color.green_700,
+                R.string.tinytot_home_active_detail
+            )
+        }
+        binding.textTinyTotState.setText(state)
+        binding.textTinyTotState.backgroundTintList =
+            ColorStateList.valueOf(ContextCompat.getColor(context, color))
+        binding.textTinyTotDetail.setText(detail)
+        binding.textTinyTotSync.text = tinyTotSettings.lastSuccessAt?.let {
+            getString(
+                R.string.tinytot_status_last_sync,
+                android.text.format.DateUtils.getRelativeTimeSpanString(it)
+            )
+        } ?: getString(R.string.tinytot_status_never)
     }
 
     override fun onDestroyView() {

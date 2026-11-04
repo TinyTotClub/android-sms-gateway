@@ -21,6 +21,8 @@ import me.capcom.smsgateway.modules.orchestrator.orchestratorModule
 import me.capcom.smsgateway.modules.ping.pingModule
 import me.capcom.smsgateway.modules.receiver.receiverModule
 import me.capcom.smsgateway.modules.settings.settingsModule
+import me.capcom.smsgateway.modules.tinytot.TinyTotSettings
+import me.capcom.smsgateway.modules.tinytot.UpiForwarding
 import me.capcom.smsgateway.modules.tinytot.tinytotModule
 import me.capcom.smsgateway.modules.webhooks.webhooksModule
 import me.capcom.smsgateway.receivers.EventsReceiver
@@ -76,6 +78,8 @@ class App: Application() {
         EventsReceiver.register(this)
 
         get<OrchestratorService>().start(this, true)
+        // Runs on every process start, including boot (BootReceiver wakes the app).
+        UpiForwarding.ensure(this, get<TinyTotSettings>())
     }
 
     val gatewayService: GatewayService by inject()

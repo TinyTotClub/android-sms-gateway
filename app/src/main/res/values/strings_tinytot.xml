@@ -101,4 +101,14 @@
     <string name="tinytot_notif_payment_verified_no_amount">Payment verified</string>
     <string name="tinytot_notif_credit_review">Credit needs review</string>
     <string name="tinytot_notif_credit_review_amount">%1$s credit needs review</string>
+
+    <string name="tinytot_home_title">PNB SMS forwarding</string>
+    <string name="tinytot_home_active">Active</string>
+    <string name="tinytot_home_off">Off</string>
+    <string name="tinytot_home_not_set_up">Not set up</string>
+    <string name="tinytot_home_active_detail">Runs in the background, including after a restart. Nothing to start.</string>
+    <string name="tinytot_home_off_detail">Turn on Forward PNB SMS in Settings → TinyTot UPI.</string>
+    <string name="tinytot_home_not_set_up_detail">Enter the verifier URL and API key in Settings → TinyTot UPI.</string>
+    <string name="tinytot_home_no_permission_detail">SMS permission is missing. Open the Payments tab and tap Grant.</string>
+    <string name="tinytot_home_gateway_hint">Local and cloud servers are optional and not needed for UPI verification.</string>
 </resources>

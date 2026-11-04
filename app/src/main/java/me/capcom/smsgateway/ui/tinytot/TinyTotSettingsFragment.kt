@@ -1,6 +1,7 @@
 package me.capcom.smsgateway.ui.tinytot
 
 import android.Manifest
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.InputType
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 import me.capcom.smsgateway.R
 import me.capcom.smsgateway.modules.tinytot.DeviceIds
 import me.capcom.smsgateway.modules.tinytot.TinyTotSettings
+import me.capcom.smsgateway.modules.tinytot.UpiForwarding
 import me.capcom.smsgateway.modules.tinytot.UpiSmsForwarder
 import me.capcom.smsgateway.modules.tinytot.api.UpiApiException
 import me.capcom.smsgateway.modules.tinytot.api.UpiVerifierClient
@@ -80,9 +82,19 @@ class TinyTotSettingsFragment : BasePreferenceFragment() {
         }
     }
 
+    private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key?.startsWith("tinytot.") == true) updateStatus()
+    }
+
     override fun onResume() {
         super.onResume()
+        preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(prefsListener)
         updateStatus()
+    }
+
+    override fun onPause() {
+        preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(prefsListener)
+        super.onPause()
     }
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {
@@ -167,6 +179,8 @@ class TinyTotSettingsFragment : BasePreferenceFragment() {
     }
 
     private fun updateStatus() {
+        // Every settings change lands here, so this is where forwarding gets switched on.
+        context?.let { UpiForwarding.ensure(it, settings) }
         val pref = findPreference<Preference>(TinyTotSettings.KEY_STATUS) ?: return
         val lines = mutableListOf<String>()
 

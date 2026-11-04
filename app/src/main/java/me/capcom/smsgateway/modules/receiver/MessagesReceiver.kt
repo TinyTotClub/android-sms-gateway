@@ -80,6 +80,14 @@ class MessagesReceiver : BroadcastReceiver(), KoinComponent {
             )
         }
 
+        /** Manifest receiver only (no runtime registration, so no double delivery). */
+        fun enableComponent(context: Context) {
+            context.applicationContext.setComponentEnabled(
+                MessagesReceiver::class.java,
+                true
+            )
+        }
+
         fun stop(context: Context) {
             unregister(context)
             context.applicationContext.setComponentEnabled(
